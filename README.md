@@ -11,3 +11,5 @@ This is a team role test where the user's can find out which traits they have th
 - JavaScript
 - ASP.NET Web API (including Entity Framework, EF tools and EF SQLlite)
 - Microsoft SQL Server
+
+I will develop this project overtime until deployment unless it's to resolve outstanding bugs/issues.
