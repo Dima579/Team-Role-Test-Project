@@ -1,0 +1,6 @@
+@TeamRoleTest1_HostAddress = http://localhost:5286
+
+GET {{TeamRoleTest1_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

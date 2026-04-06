@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results Page</title>
+    <link rel="stylesheet" href="styles.css" class="styles">
+</head>
+<body>
+    <section class="main-container">
+        
+        <div class="title-group">
+            <h1 class="title-group_heading">Your results have been submitted!</h1>
+            <h3>If you'd like to delete your results, press the delete button (please note if you leave this page you won't be able to undo the submission):</h3>
+        </div>
+
+        <div class="table-container title-group">
+            <table class="results-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Creative Thinking</th>
+                    <th>Team Supporter</th>
+                    <th>Organiser</th>
+                    <th>Driver</th>
+                    <th>Finisher</th>
+                    <th>Analyst</th>
+                    <th>Coordinator</th>
+                    <th>Explorer</th>
+                    <th>Specialist</th>
+                </tr>
+                <tbody id="userTraitValsRes"></tbody>
+            </table>
+        </div>
+
+        <div class="button-group">
+            <button class="a-btn" id="rTabDelBtn">Delete result (This cannot be undone)</button>
+            <button id="retBtn" class="a-btn">Return to main page</button>
+        </div>
+    <p class="italic">Project created By Alex Dimakopoulos @2026</p>
+    </section>
+    <script src="/scripts/results-table.js"></script>
+</body>
+</html>
