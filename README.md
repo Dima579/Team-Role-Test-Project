@@ -1,4 +1,4 @@
-Greetings, thankyou for viewing my project!
+Greetings, thank you for viewing my project!
 
 This project is still under-development and requires the following before it can be deployed as a live project:
 - intergration of proper conditional/error handling
