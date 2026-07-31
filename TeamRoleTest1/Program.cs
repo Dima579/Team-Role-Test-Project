@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using TeamRoleTest1.Data;
+using TeamRoleTest1.Services;
 
 namespace TeamRoleTest1
 {
@@ -15,6 +16,8 @@ namespace TeamRoleTest1
             
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IUserResultservices, UserServices>();
 
             builder.Services.AddCors(options =>
             {

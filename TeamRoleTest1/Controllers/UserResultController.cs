@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using TeamRoleTest1.Data;
 using TeamRoleTest1.Models;
+using TeamRoleTest1.Services;
+using TeamRoleTest1.DTOs;
 
 namespace TeamRoleTest1.Controllers
 {
@@ -12,57 +14,44 @@ namespace TeamRoleTest1.Controllers
     public class UserResultController : ControllerBase
 
     {
-        private readonly ApplicationDbContext _db;
         private readonly ILogger<ApplicationDbContext> _logger;
+        private readonly IUserResultservices _services;
 
-        public UserResultController(ApplicationDbContext db, ILogger<ApplicationDbContext> logger)
+        public UserResultController(ILogger<ApplicationDbContext> logger, IUserResultservices services)
         {
-            {
-                _db = db;
-                _logger = logger;
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateUserResult([FromBody] UserResult model) 
-        {
-            if (model == null) {return BadRequest();}
-            else if (!ModelState.IsValid) {return BadRequest(ModelState);}
-            else 
-            {
-                _db.Results.Add(model);
-                await _db.SaveChangesAsync();
-                return Ok(model);
-            }
+            _logger = logger;
+            _services = services;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUserResults()
         {
-            var results = await _db.Results.ToListAsync();
-            return Ok(results);
+            var result = await _services.GetAllUsers();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserResultById(int Id)
-        {
-            var result = await _db.Results.FindAsync(Id);
+        { 
+            var result = await _services.GetUserById(Id);
+            if(result == null) {return NotFound();}
+            return Ok(result);
+        }
 
-            if (result == null) {return NotFound();}
-            else {return Ok(result);}
+        [HttpPost]
+        public async Task<IActionResult> CreateUserResult([FromBody] UserResultDTO model)
+        {
+            var result = await _services.CreateUser(model);
+            return CreatedAtAction(nameof(GetUserResultById), new { id = result.Id}, result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserResultById(int Id)
         {
-            var result = await _db.Results.FindAsync(Id);
-            if (result == null) {return NotFound();} 
-            else 
-            {
-                _db.Remove(result);
-                await _db.SaveChangesAsync();
-                return Ok("Result Successfully deleted.");
-            }
+            var result = await _services.DeleteUser(Id);
+            if(result == false) {return NotFound();}
+            return NoContent();
         }
+
     }
 }
