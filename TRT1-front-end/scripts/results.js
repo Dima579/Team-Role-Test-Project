@@ -9,10 +9,8 @@ document.addEventListener('DOMContentLoaded', () =>
     }
 
     const answerVals = JSON.parse(storedData);
-
     const userAnswerVals = Object.entries(answerVals).filter(([key, value]) => typeof value === 'number').sort((a, b) => b[1] - a[1]);
     const topAnswerVals = userAnswerVals.slice(0, 3);
-
     const resultsSubmitBtn = document.getElementById('rTabSubBtn');
 
     
@@ -168,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () =>
 
     generateTableResults(tableResultTraits, answerVals);
 });
+
 
 const compSend = async (userObj) =>
 {

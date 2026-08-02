@@ -65,7 +65,6 @@ const listResults = (results, table) =>
     });
 }
 
-
 const presentSpecificResult = async (id, tableAr) =>
 {
     const result = await retrieveSpecificResult(id);
@@ -92,6 +91,7 @@ const presentSpecificResult = async (id, tableAr) =>
                 </tr>`;
         tableAr.insertAdjacentHTML('beforeend', resultVals);    
 }
+
 
 const retrieveResults = async () =>
 {

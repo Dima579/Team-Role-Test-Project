@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () =>
 {
     const storedId = localStorage.getItem('userResultId');
-
     const userTraitResults = document.getElementById('userTraitValsRes');
 
     try
@@ -102,4 +101,3 @@ const deleteUserResult = async (id) =>
         throw exception;
     }
 }
-

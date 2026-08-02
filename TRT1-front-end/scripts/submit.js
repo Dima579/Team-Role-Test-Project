@@ -14,6 +14,7 @@ const answerVals =
     specialist: 0
 }
 
+
 quizForm.addEventListener('submit', (event) =>
 {
     event.preventDefault();
@@ -31,9 +32,9 @@ quizForm.addEventListener('submit', (event) =>
 
     answerVals.firstName = firstN.value;
     answerVals.lastName = secN.value;
-     selectedAnswers.forEach(answer => {answerVals[answer.value]++;});
+    selectedAnswers.forEach(answer => {answerVals[answer.value]++;});
 
-     if (selectedAnswers.length < 12) 
+    if (selectedAnswers.length < 12) 
     {
         alert("please answer all questions."); 
         return;
