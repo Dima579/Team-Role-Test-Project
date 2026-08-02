@@ -42,7 +42,7 @@ namespace TeamRoleTest1.Controllers
         public async Task<IActionResult> CreateUserResult([FromBody] UserResultDTO model)
         {
             var result = await _services.CreateUser(model);
-            return CreatedAtAction(nameof(GetUserResultById), new { id = result.Id}, result);
+            return CreatedAtAction(nameof(GetUserResultById), new {id = result.Id}, result);
         }
 
         [HttpDelete("{id}")]

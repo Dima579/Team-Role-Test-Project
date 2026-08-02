@@ -1,13 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => 
 {
     const storedData = localStorage.getItem('userResults');
-    const ansVals = JSON.parse(storedData);
 
-    const uAnsVals = Object.entries(ansVals).filter(([key, value]) => typeof value === 'number').sort((a, b) => b[1] - a[1]);
-    const topAnsVals = uAnsVals.slice(0, 3);
+    if(!storedData) 
+    {
+        alert('No results found.');
+        return;
+    }
+
+    const answerVals = JSON.parse(storedData);
+
+    const userAnswerVals = Object.entries(answerVals).filter(([key, value]) => typeof value === 'number').sort((a, b) => b[1] - a[1]);
+    const topAnswerVals = userAnswerVals.slice(0, 3);
 
     const resultsSubmitBtn = document.getElementById('rTabSubBtn');
-    resultsSubmitBtn.addEventListener('click', () => {compSend(ansVals); window.location.href='results-table.html';});
+
+    
+    resultsSubmitBtn.addEventListener('click', async () => 
+    {
+        try
+        {
+            const createdResult = await compSend(answerVals);
+            localStorage.setItem('userResultId', createdResult.id);
+            window.location.href='results-table.html'; 
+        }
+        catch(exception) 
+        {
+            console.error(exception);
+            alert('unable to submit your results');
+        }
+    });
 
 
     const traitDetails = [
@@ -92,79 +114,72 @@ document.addEventListener('DOMContentLoaded', () =>
         con: "Can struggle against areas outside of specialisation"
     }];
 
-    const cardOuter = document.createElement('div')
-    cardOuter.id="result-card";
+
     const resultsContainer = document.getElementById('resultsCont');
 
-    const genCard = (uValues, idVals) =>
+    const generateCards = (userValues, traitDetails) =>
     {
-        uValues.forEach(([key]) => 
+        userValues.forEach(([key]) => 
         {
-            idVals.forEach((idVal) => 
-            {
-                if (key === idVal.id)
-                {
-                    const card = document.createElement('div');
-                    card.classList.add('result-card');
+            const traitDetail = traitDetails.find((trait) => trait.id === key);
+            if(!traitDetail) {return;}
 
-                    card.innerHTML = `
-                    <div class="title-group">
-                        <h3 class="text-underlined">${idVal.title}</h3>
-                        <h4>${idVal.desc}</h4>
-                    </div>
-                    <img class="card-img" src="${idVal.imageLink}">
-                    <div class="title-group">
-                        <h4>Pro +: ${idVal.pro}</h4>
-                        <h4>Con -: ${idVal.con}</h4>
-                    </div>`;
+            const card = document.createElement('div');
+            card.classList.add('result-card');
 
-                    resultsContainer.append(card);
-                }
-            });
+            card.innerHTML = `
+                <div class="title-group">
+                    <h3 class="text-underlined">${traitDetail.title}</h3>
+                    <h4>${traitDetail.desc}</h4>
+                </div>
+                <img class="card-img" src="${traitDetail.imageLink}">
+                <div class="title-group">
+                    <h4>Pro +: ${traitDetail.pro}</h4>
+                    <h4>Con -: ${traitDetail.con}</h4>
+                </div>`;
+
+            resultsContainer.append(card);
         });
     };
-genCard(topAnsVals, traitDetails);
+    generateCards(topAnswerVals, traitDetails);
 
 
-const tableResultTraits = document.getElementById('tableTraitVlasRes');
+    const tableResultTraits = document.getElementById('tableTraitValsRes');
 
-const genTableResults = (tableAr, uValues) => 
+
+    const generateTableResults = (table, results) => 
     {
         const resultVals = `
         
             <tr>
-                <td>${uValues.creativeThinker}</td>
-                <td>${uValues.teamSupporter}</td>
-                <td>${uValues.organiser}</td>
-                <td>${uValues.driver}</td>
-                <td>${uValues.finisher}</td>
-                <td>${uValues.analyst}</td>
-                <td>${uValues.coordinator}</td>
-                <td>${uValues.explorer}</td>
-                <td>${uValues.specialist}</td>
+                <td>${results.creativeThinker}</td>
+                <td>${results.teamSupporter}</td>
+                <td>${results.organiser}</td>
+                <td>${results.driver}</td>
+                <td>${results.finisher}</td>
+                <td>${results.analyst}</td>
+                <td>${results.coordinator}</td>
+                <td>${results.explorer}</td>
+                <td>${results.specialist}</td>
             </tr>`;
 
-        tableAr.innerHTML=resultVals;
+        table.innerHTML=resultVals;
     }
 
-
-genTableResults(tableResultTraits, ansVals);
+    generateTableResults(tableResultTraits, answerVals);
 });
 
 const compSend = async (userObj) =>
 {
-    //const uData = userObj.json();
-
-    try
+    const response = await fetch('https://localhost:7264/api/UserResult', 
     {
-        const response = await fetch('https://localhost:7264/api/UserResult', 
-            {
-                method: "POST", 
-                headers: {'content-type': 'application/json', 'accept': 'application/json'},
-                body: JSON.stringify(userObj)
-            });
-        if(!response.ok)
-        {console.log(`Error: ${response.status}`);}
+        method: "POST", 
+        headers: {'content-type': 'application/json', 'accept': 'application/json'},
+        body: JSON.stringify(userObj)
+    });
+    if(!response.ok) 
+    {
+        throw new Error(`HTTP Error: ${response.status}`);
     }
-    catch(exception) {console.log(exception);}
+    return await response.json();
 }

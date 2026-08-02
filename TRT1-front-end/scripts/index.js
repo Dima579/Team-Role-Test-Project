@@ -2,133 +2,116 @@ document.addEventListener('DOMContentLoaded', async () =>
 {
     const userTraitResults = document.getElementById('userTraitValsRes');
     const submissionBtn = document.getElementById('submitButton');
-    const resetBtn = document.getElementById('resetButton')
+    const resetBtn = document.getElementById('resetButton');
+    const inputId = document.getElementById('idInp');
 
-    const results = await retrieveResults();
-    listResults(results, userTraitResults);
-
-
-    submissionBtn.addEventListener('click', async () => 
+    try
     {
-        const inputId = document.getElementById('idInp');
-        const iId = inputId.value;
-        presentSpefResult(iId, userTraitResults);
-    });
+        const results = await retrieveResults();
+        listResults(results, userTraitResults);
 
-    resetBtn.addEventListener('click', () => {listResults(results, userTraitResults);})
+        submissionBtn.addEventListener('click', async () => 
+        {
+            try
+            {
+                const iId = inputId.value;
+                await presentSpecificResult(iId, userTraitResults); 
+            }
+            catch(exception) 
+            {
+                console.error(exception);
+                alert("Unable to retrieve specific result.");
+            }
+            
+        });
+
+        resetBtn.addEventListener('click', () => 
+        {
+            inputId.value = "";
+            listResults(results, userTraitResults);
+        });
+    }
+    catch (exception) 
+    {
+        console.error(exception);
+        alert("Unable to retrieve results.");
+    }
+   
 });
 
 
-const listResults = (resConv, tableAr) => 
+const listResults = (results, table) =>
 {
-    tableAr.innerHTML='';
-    resConv.sort((a, b) => b.id - a.id)
-    .forEach((resConverted) => 
+    table.innerHTML='';
+    results.sort((a, b) => b.id - a.id)
+    .forEach((result) =>
     {
-        const fullName = `${resConverted.firstName} ${resConverted.lastName}`;
+        const fullName = `${result.firstName} ${result.lastName}`;
         const resultVals = `
             <tr>
-                <td>${resConverted.id}</td>
+                <td>${result.id}</td>
                 <td>${fullName}</td>
-                <td>${resConverted.creativeThinker}</td>
-                <td>${resConverted.teamSupporter}</td>
-                <td>${resConverted.organiser}</td>
-                <td>${resConverted.driver}</td>
-                <td>${resConverted.finisher}</td>
-                <td>${resConverted.analyst}</td>
-                <td>${resConverted.coordinator}</td>
-                <td>${resConverted.explorer}</td>
-                <td>${resConverted.specialist}</td>
+                <td>${result.creativeThinker}</td>
+                <td>${result.teamSupporter}</td>
+                <td>${result.organiser}</td>
+                <td>${result.driver}</td>
+                <td>${result.finisher}</td>
+                <td>${result.analyst}</td>
+                <td>${result.coordinator}</td>
+                <td>${result.explorer}</td>
+                <td>${result.specialist}</td>
             </tr>`;
-        tableAr.insertAdjacentHTML('beforeend', resultVals);
+        table.insertAdjacentHTML('beforeend', resultVals);
     });
 }
 
-const presentSpefResult = async (id, tableAr) =>
+
+const presentSpecificResult = async (id, tableAr) =>
 {
-    const resIdConverted = await retrieveSprefResults(id);
-    if(!id === resIdConverted.id || resIdConverted.length === 0)
+    const result = await retrieveSpecificResult(id);
+    if(result === null)
     {
-        listResults(results, userTraitResults);
-        alert('No ID found!');
+        alert('No ID found.');
         return;
     }
-    else
-    {
         tableAr.innerHTML='';
-        const fullName = `${resIdConverted.firstName} ${resIdConverted.lastName}`;
+        const fullName = `${result.firstName} ${result.lastName}`;
         const resultVals = `
                 <tr>
-                    <td>${resIdConverted.id}</td>
+                    <td>${result.id}</td>
                     <td>${fullName}</td>
-                    <td>${resIdConverted.creativeThinker}</td>
-                    <td>${resIdConverted.teamSupporter}</td>
-                    <td>${resIdConverted.organiser}</td>
-                    <td>${resIdConverted.driver}</td>
-                    <td>${resIdConverted.finisher}</td>
-                    <td>${resIdConverted.analyst}</td>
-                    <td>${resIdConverted.coordinator}</td>
-                    <td>${resIdConverted.explorer}</td>
-                    <td>${resIdConverted.specialist}</td>
+                    <td>${result.creativeThinker}</td>
+                    <td>${result.teamSupporter}</td>
+                    <td>${result.organiser}</td>
+                    <td>${result.driver}</td>
+                    <td>${result.finisher}</td>
+                    <td>${result.analyst}</td>
+                    <td>${result.coordinator}</td>
+                    <td>${result.explorer}</td>
+                    <td>${result.specialist}</td>
                 </tr>`;
-        tableAr.insertAdjacentHTML('beforeend', resultVals); 
-    }    
+        tableAr.insertAdjacentHTML('beforeend', resultVals);    
 }
-
-
 
 const retrieveResults = async () =>
 {
     try
     {
-        const response = await fetch('https://localhost:7264/api/UserResult', 
-        {
-            method: 'GET',
-            headers: {'content-type': 'application/json', 'accept': 'application/json'},
-        }
-        ); 
-        if(!response.ok) 
-        {
-            console.log(`Error: ${response.status}`);
-            return [];
-        }
-        else 
-        {
-            const resConverted = await response.json(); 
-            return resConverted;
-        }
+        const response = await fetch('https://localhost:7264/api/UserResult');
+        if(!response.ok) {throw new Error(`HTTP Error: ${response.status}`);}
+        return await response.json();
     }
-    catch(exception)
-    {
-        console.log(exception);
-        return [];
-    }
+    catch(exception) {throw exception;}
 }
 
-const retrieveSprefResults = async (id) =>
+const retrieveSpecificResult = async (id) =>
 {
     try
     {
-        const response = await fetch(`https://localhost:7264/api/UserResult/${id}`, 
-        {
-            method: 'GET',
-            headers: {'content-type': 'application/json', 'accept': 'application/json'},
-        }
-        ); 
-        if(!response.ok) 
-        {
-            console.log(`Error: ${response.status}`);
-            return [];
-        }
-        else 
-        {
-            const resIdConverted = await response.json(); 
-            return resIdConverted;
-        }
+        const response = await fetch(`https://localhost:7264/api/UserResult/${id}`); 
+        if(response.status === 404) {return null}
+        if(!response.ok) {throw new Error(`HTTP Error: ${response.status}`);}
+        return await response.json(); 
     }
-    catch(exception)
-    {
-        console.log(exception);
-        return [];
-    }
+    catch(exception) {throw exception;}
 }
